@@ -49,17 +49,43 @@ export function useAuth() {
 
 	const signInWithPassword = useCallback(
 		async (email: string, password: string) => {
-			return supabase.auth.signInWithPassword({ email, password });
+			return supabase.auth.signInWithPassword({
+				email: email.trim().toLowerCase(),
+				password,
+			});
 		},
 		[],
 	);
 
 	const signUp = useCallback(async (email: string, password: string) => {
-		return supabase.auth.signUp({ email, password });
+		const normalizedEmail = email.trim().toLowerCase();
+		console.log(`Attempting to sign up user: ${normalizedEmail}`);
+		
+		const result = await supabase.auth.signUp({
+			email: normalizedEmail,
+			password,
+		});
+
+		if (result.error) {
+			console.error("Supabase Auth signUp error:", result.error.message);
+		} else {
+			console.log("Auth signUp successful, user ID:", result.data.user?.id);
+		}
+
+		return result;
 	}, []);
 
 	const signOut = useCallback(async () => {
 		return supabase.auth.signOut();
+	}, []);
+
+	const signInWithOAuth = useCallback(async (provider: "google" | "facebook") => {
+		return supabase.auth.signInWithOAuth({
+			provider,
+			options: {
+				redirectTo: "grillystore://", // Match the scheme in app.json
+			},
+		});
 	}, []);
 
 	return {
@@ -67,5 +93,6 @@ export function useAuth() {
 		signInWithPassword,
 		signUp,
 		signOut,
+		signInWithOAuth,
 	};
 }

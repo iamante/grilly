@@ -1,19 +1,28 @@
 import { create } from "zustand";
 
+export type Customizations = {
+	sauce: string;
+	heatLevel: "Mild" | "Original" | "Fire";
+	extraRice: boolean;
+	extraAtchara: boolean;
+};
+
 export type CartItem = {
 	id: string;
+	uniqueId: string;
 	name: string;
 	price: number;
 	imageUrl: string;
 	quantity: number;
+	customizations: Customizations;
 };
 
 type CartState = {
 	items: CartItem[];
-	addItem: (item: Omit<CartItem, "quantity">) => void;
-	removeItem: (id: string) => void;
-	increment: (id: string) => void;
-	decrement: (id: string) => void;
+	addItem: (item: Omit<CartItem, "quantity" | "uniqueId">) => void;
+	removeItem: (uniqueId: string) => void;
+	increment: (uniqueId: string) => void;
+	decrement: (uniqueId: string) => void;
 	clearCart: () => void;
 	totalItems: () => number;
 	totalPrice: () => number;
@@ -23,30 +32,33 @@ export const useCartStore = create<CartState>((set, get) => ({
 	items: [],
 	addItem: (item) =>
 		set((state) => {
-			const existing = state.items.find((i) => i.id === item.id);
+			const uniqueId = `${item.id}-${JSON.stringify(item.customizations)}`;
+			const existing = state.items.find((i) => i.uniqueId === uniqueId);
 			if (existing) {
 				return {
 					items: state.items.map((i) =>
-						i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+						i.uniqueId === uniqueId ? { ...i, quantity: i.quantity + 1 } : i,
 					),
 				};
 			}
-			return { items: [...state.items, { ...item, quantity: 1 }] };
+			return { items: [...state.items, { ...item, uniqueId, quantity: 1 }] };
 		}),
-	removeItem: (id) =>
+	removeItem: (uniqueId) =>
 		set((state) => ({
-			items: state.items.filter((i) => i.id !== id),
+			items: state.items.filter((i) => i.uniqueId !== uniqueId),
 		})),
-	increment: (id) =>
+	increment: (uniqueId) =>
 		set((state) => ({
 			items: state.items.map((i) =>
-				i.id === id ? { ...i, quantity: i.quantity + 1 } : i,
+				i.uniqueId === uniqueId ? { ...i, quantity: i.quantity + 1 } : i,
 			),
 		})),
-	decrement: (id) =>
+	decrement: (uniqueId) =>
 		set((state) => ({
 			items: state.items
-				.map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+				.map((i) =>
+					i.uniqueId === uniqueId ? { ...i, quantity: i.quantity - 1 } : i,
+				)
 				.filter((i) => i.quantity > 0),
 		})),
 	clearCart: () => set({ items: [] }),

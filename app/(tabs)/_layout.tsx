@@ -9,20 +9,35 @@ export default function TabsLayout() {
 		<Tabs
 			screenOptions={{
 				headerShown: false,
-				tabBarStyle: {
-					backgroundColor: "#09090b",
-					borderTopColor: "#27272a",
+				sceneStyle: {
+					backgroundColor: "#120b08",
 				},
-				tabBarActiveTintColor: "#f97316",
-				tabBarInactiveTintColor: "#a1a1aa",
+				tabBarStyle: {
+					backgroundColor: "#140d0a",
+					borderTopColor: "rgba(255,255,255,0.06)",
+					height: 78,
+					paddingTop: 10,
+					paddingBottom: 14,
+				},
+				tabBarActiveTintColor: "#fb923c",
+				tabBarInactiveTintColor: "#9a8d86",
+				tabBarLabelStyle: {
+					fontSize: 11,
+					fontWeight: "700",
+					letterSpacing: 0.6,
+				},
 			}}
 		>
 			<Tabs.Screen
 				name="index"
 				options={{
 					title: "Home",
-					tabBarIcon: ({ color, size }) => (
-						<Ionicons name="home-outline" size={size} color={color} />
+					tabBarIcon: ({ color, size, focused }) => (
+						<Ionicons
+							name={focused ? "flame" : "flame-outline"}
+							size={size}
+							color={color}
+						/>
 					),
 				}}
 			/>
@@ -30,8 +45,12 @@ export default function TabsLayout() {
 				name="search"
 				options={{
 					title: "Search",
-					tabBarIcon: ({ color, size }) => (
-						<Ionicons name="search-outline" size={size} color={color} />
+					tabBarIcon: ({ color, size, focused }) => (
+						<Ionicons
+							name={focused ? "search" : "search-outline"}
+							size={size}
+							color={color}
+						/>
 					),
 				}}
 			/>
@@ -40,8 +59,17 @@ export default function TabsLayout() {
 				options={{
 					title: "Cart",
 					tabBarBadge: totalItems > 0 ? totalItems : undefined,
-					tabBarIcon: ({ color, size }) => (
-						<Ionicons name="cart-outline" size={size} color={color} />
+					tabBarBadgeStyle: {
+						backgroundColor: "#fb923c",
+						color: "#120b08",
+						fontWeight: "700",
+					},
+					tabBarIcon: ({ color, size, focused }) => (
+						<Ionicons
+							name={focused ? "bag-handle" : "bag-handle-outline"}
+							size={size}
+							color={color}
+						/>
 					),
 				}}
 			/>
@@ -49,8 +77,12 @@ export default function TabsLayout() {
 				name="account"
 				options={{
 					title: "Account",
-					tabBarIcon: ({ color, size }) => (
-						<Ionicons name="person-outline" size={size} color={color} />
+					tabBarIcon: ({ color, size, focused }) => (
+						<Ionicons
+							name={focused ? "person-circle" : "person-circle-outline"}
+							size={size}
+							color={color}
+						/>
 					),
 				}}
 			/>
